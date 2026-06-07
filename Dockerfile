@@ -8,9 +8,9 @@ ENV PYTHONUNBUFFERED=1
 # Create and set the working directory
 WORKDIR /app
 
-# Install system dependencies (needed for psycopg2 and other packages)
+# Install system dependencies (needed for psycopg2, mysqlclient, and other packages)
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends gcc libpq-dev \
+    && apt-get install -y --no-install-recommends gcc libpq-dev pkg-config default-libmysqlclient-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
