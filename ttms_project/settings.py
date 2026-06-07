@@ -16,6 +16,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-your-secret-key-here')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+CSRF_TRUSTED_ORIGINS = [f"https://{host.strip()}" for host in ALLOWED_HOSTS if host.strip() and host.strip() != '*'] + ['http://127.0.0.1:8080', 'http://localhost:8000', 'https://timetimeble-management-system.fly.dev']
 
 # Application definition
 INSTALLED_APPS = [
