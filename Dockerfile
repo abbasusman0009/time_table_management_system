@@ -29,5 +29,6 @@ RUN python manage.py collectstatic --noinput
 # Expose the port Gunicorn will run on
 EXPOSE 8000
 
-# Set the entrypoint
+# Set the entrypoint and default command
 ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["gunicorn", "ttms_project.wsgi:application", "--bind", "0.0.0.0:8000"]
