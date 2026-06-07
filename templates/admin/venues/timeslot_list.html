@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Time Slots - TTMS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Time Slot Grid</h2>
+        <a href="{% url 'venues:timeslot_create' %}" class="btn btn-primary">
+            <i class="bi bi-clock me-1"></i> Add Slot
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th>Day</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Slot Order</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for slot in timeslots %}
+                    <tr>
+                        <td>{{ slot.day }}</td>
+                        <td>{{ slot.start_time|time:"H:i" }}</td>
+                        <td>{{ slot.end_time|time:"H:i" }}</td>
+                        <td><span class="badge bg-secondary">Slot #{{ slot.slot_index }}</span></td>
+                        <td>
+                            <!-- Add edit if needed -->
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">No time slots configured.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

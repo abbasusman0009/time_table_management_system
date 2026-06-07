@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TTMS - NEU Gombe{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
+        .sidebar { min-height: 100vh; background-color: #212529; color: white; width: 250px; position: fixed; }
+        .sidebar a { color: rgba(255,255,255,0.8); text-decoration: none; padding: 10px 20px; display: block; }
+        .sidebar a:hover, .sidebar a.active { background-color: #343a40; color: white; }
+        .main-content { transition: margin-left 0.3s; padding: 20px; }
+        {% if user.is_authenticated %}
+        .main-content { margin-left: 250px; }
+        .navbar { margin-left: 250px; background-color: white; border-bottom: 1px solid #dee2e6; }
+        {% else %}
+        .main-content { margin-left: 0; }
+        {% endif %}
+        .card { border: none; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); border-radius: 10px; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    {% if user.is_authenticated %}
+    <!-- Sidebar -->
+    <div class="sidebar d-none d-md-block">
+        <div class="p-4 text-center">
+            <h4 class="fw-bold">TTMS <span class="text-primary">NEU</span></h4>
+            <small class="text-muted">Gombe State</small>
+        </div>
+        <hr class="mx-3 opacity-25">
+        
+        <div class="nav flex-column">
+            {% if user.role == 'admin' %}
+                <a href="{% url 'scheduling:admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                    <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                </a>
+                <a href="{% url 'academics:department_list' %}">
+                    <i class="bi bi-building me-2"></i> Departments
+                </a>
+                <a href="{% url 'academics:course_list' %}">
+                    <i class="bi bi-book me-2"></i> Courses
+                </a>
+                <a href="{% url 'academics:lecturer_list' %}">
+                    <i class="bi bi-people me-2"></i> Lecturers
+                </a>
+                <a href="{% url 'venues:room_list' %}">
+                    <i class="bi bi-door-open me-2"></i> Rooms
+                </a>
+                <a href="{% url 'scheduling:generate' %}">
+                    <i class="bi bi-calendar-event me-2"></i> Generate Timetable
+                </a>
+                <a href="{% url 'scheduling:conflicts_list' %}">
+                    <i class="bi bi-exclamation-triangle me-2"></i> Conflicts
+                </a>
+                <a href="{% url 'timetable:admin_timetable_history' %}">
+                    <i class="bi bi-clock-history me-2"></i> Timetable History
+                </a>
+                <a href="{% url 'timetable:admin_feedback_list' %}">
+                    <i class="bi bi-envelope-exclamation me-2"></i> Student Feedback
+                </a>
+            {% elif user.role == 'lecturer' %}
+                <a href="{% url 'timetable:lecturer_dashboard' %}">
+                    <i class="bi bi-calendar3 me-2"></i> My Schedule
+                </a>
+            {% elif user.role == 'student' %}
+                <a href="{% url 'timetable:student_dashboard' %}">
+                    <i class="bi bi-grid-3x3 me-2"></i> My Timetable
+                </a>
+            {% endif %}
+            
+            <hr class="mx-3 opacity-25">
+            <a href="{% url 'timetable:explorer' %}">
+                <i class="bi bi-globe me-2"></i> Timetable Explorer
+            </a>
+        </div>
+        </div>
+    </div>
+
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container-fluid">
+            <span class="navbar-text ms-auto me-3">
+                Welcome, <strong>{{ user.username }}</strong> 
+                <span class="badge bg-primary ms-1">{{ user.get_role_display }}</span>
+            </span>
+            
+            <!-- Notifications Dropdown -->
+            <div class="dropdown me-3">
+                <a class="nav-link position-relative dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-bell fs-5 text-secondary"></i>
+                    {% if unread_count > 0 %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65em;">
+                        {{ unread_count }}
+                    </span>
+                    {% endif %}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="width: 300px; max-height: 400px; overflow-y: auto;">
+                    <li class="dropdown-header fw-bold">Notifications</li>
+                    {% for notif in unread_notifications %}
+                    <li>
+                        <a class="dropdown-item border-bottom py-2" href="{{ notif.link|default:'#' }}">
+                            <small class="d-block text-wrap">{{ notif.message }}</small>
+                            <small class="text-muted" style="font-size: 0.75em;">{{ notif.created_at|timesince }} ago</small>
+                        </a>
+                    </li>
+                    {% empty %}
+                    <li><span class="dropdown-item text-muted small text-center py-3">No new notifications</span></li>
+                    {% endfor %}
+                    {% if unread_count > 0 %}
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-center small text-primary" href="{% url 'accounts:mark_notifications_read' %}">Mark all as read</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Profile Dropdown -->
+            <div class="dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                    <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=0d6efd&color=fff" class="rounded-circle" width="32">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <!-- Main Content -->
+    <div class="main-content">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

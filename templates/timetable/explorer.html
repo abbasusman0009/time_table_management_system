@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Timetable Explorer - TTMS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">Timetable Explorer</h2>
+            <p class="text-muted">Search and explore the master schedule across the university.</p>
+        </div>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="card shadow-sm border-0 mb-4 p-4 bg-white">
+        <form method="GET" action="{% url 'timetable:explorer' %}">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-muted">Department</label>
+                    <select name="department" class="form-select">
+                        <option value="">All Departments</option>
+                        {% for dept in departments %}
+                        <option value="{{ dept.id }}" {% if selected_dept == dept.id %}selected{% endif %}>{{ dept.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold small text-muted">Level</label>
+                    <select name="level" class="form-select">
+                        <option value="">All Levels</option>
+                        {% for lvl in levels %}
+                        <option value="{{ lvl }}" {% if selected_level == lvl %}selected{% endif %}>{{ lvl }}L</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-muted">Course</label>
+                    <select name="course" class="form-select">
+                        <option value="">All Courses</option>
+                        {% for course in courses %}
+                        <option value="{{ course.id }}" {% if selected_course == course.id %}selected{% endif %}>{{ course.code }} - {{ course.title|truncatechars:30 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-muted">Lecturer</label>
+                    <select name="lecturer" class="form-select">
+                        <option value="">All Lecturers</option>
+                        {% for lec in lecturers %}
+                        <option value="{{ lec.id }}" {% if selected_lecturer == lec.id %}selected{% endif %}>{{ lec.get_full_name|default:lec.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-1 d-grid">
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
+                </div>
+            </div>
+            <div class="mt-3 text-end">
+                <a href="{% url 'timetable:explorer' %}" class="btn btn-sm btn-link text-decoration-none text-muted">Clear Filters</a>
+            </div>
+        </form>
+    </div>
+
+    {% if has_searched %}
+    <!-- Calendar Grid -->
+    <div class="card shadow-sm border-0 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-bordered mb-0 align-middle">
+                <thead class="bg-dark text-white text-center">
+                    <tr>
+                        <th style="width: 120px;" class="py-3">Time / Day</th>
+                        <th class="py-3">Monday</th>
+                        <th class="py-3">Tuesday</th>
+                        <th class="py-3">Wednesday</th>
+                        <th class="py-3">Thursday</th>
+                        <th class="py-3">Friday</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for slot in timeslots %}
+                    <tr>
+                        <td class="text-center fw-bold bg-light text-secondary">
+                            <div class="small">{{ slot.start_time|time:"H:i" }}</div>
+                            <div class="small text-muted">to</div>
+                            <div class="small">{{ slot.end_time|time:"H:i" }}</div>
+                        </td>
+                        {% for day in days %}
+                        <td class="p-2" style="min-height: 120px; width: 17%;">
+                            {% with day_name=day %}
+                            {% for entry in entries %}
+                                {% if entry.time_slot.day == day_name and entry.time_slot.slot_index == slot.slot_index %}
+                                <div class="p-3 mb-2 rounded bg-success bg-opacity-10 border-start border-success border-4 shadow-sm h-100 d-flex flex-column justify-content-between">
+                                    <div>
+                                        <div class="d-flex justify-content-between">
+                                            <div class="fw-bold text-success mb-1">{{ entry.course.code }}</div>
+                                            <div class="small fw-semibold text-secondary">{{ entry.timetable.department.code }} {{ entry.timetable.level }}L</div>
+                                        </div>
+                                        <div class="small text-muted mb-2" style="line-height: 1.2;">{{ entry.course.title|truncatechars:40 }}</div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top border-success border-opacity-25">
+                                        <span class="badge bg-white text-dark border"><i class="bi bi-door-open me-1"></i>{{ entry.room.name|default:"TBA" }}</span>
+                                        <span class="small fw-semibold text-secondary" title="Lecturer"><i class="bi bi-person me-1"></i>{{ entry.lecturer.username }}</span>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                            {% endwith %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="bi bi-calendar-x fs-1 d-block mb-3 text-secondary opacity-50"></i>
+                            No timeslots have been configured by the admin yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="card shadow-sm border-0 p-5 text-center bg-light mt-4">
+        <i class="bi bi-globe2 display-1 text-primary opacity-25 mb-3"></i>
+        <h4 class="text-muted fw-bold">Explore the Master Schedule</h4>
+        <p class="text-muted mb-0">Use the filters above to search for a specific Department, Level, Course, or Lecturer schedule.</p>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

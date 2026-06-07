@@ -1,0 +1,105 @@
+/* NEU TTMS Custom Styling */
+
+:root {
+    --neu-blue: #0d47a1;
+    --neu-gold: #ffc107;
+    --neu-light-bg: #f4f7f6;
+    --sidebar-width: 260px;
+}
+
+body {
+    background-color: var(--neu-light-bg);
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    background: linear-gradient(180deg, #1a237e 0%, #0d47a1 100%);
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+}
+
+.sidebar a {
+    border-radius: 8px;
+    margin: 5px 15px;
+    transition: all 0.2s ease;
+}
+
+.sidebar a:hover {
+    background: rgba(255,255,255,0.1);
+    transform: translateX(5px);
+}
+
+.sidebar a.active {
+    background-color: var(--neu-gold) !important;
+    color: #000 !important;
+    font-weight: 600;
+}
+
+/* Navbar */
+.navbar {
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+/* Tables */
+.table thead th {
+    border-top: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--neu-blue);
+    border-color: var(--neu-blue);
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background-color: #1565c0;
+    box-shadow: 0 4px 12px rgba(13, 71, 161, 0.3);
+}
+
+/* Timetable Grid */
+.timetable-cell {
+    min-height: 120px;
+    transition: background 0.2s;
+}
+
+.timetable-cell:hover {
+    background-color: rgba(0,0,0,0.02);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.main-content {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Role Badges */
+.badge {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 500;
+}

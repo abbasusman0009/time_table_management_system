@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Conflict Resolution - TTMS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="mb-4">
+        <h2 class="fw-bold">Conflict Resolution Panel</h2>
+        <p class="text-muted">Below are the entries that the system could not automatically schedule without violating hard constraints.</p>
+    </div>
+
+    <div class="card p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Course</th>
+                        <th>Lecturer</th>
+                        <th>Department/Level</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in conflicted_entries %}
+                    <tr>
+                        <td>
+                            <div class="fw-bold">{{ entry.course.title }}</div>
+                            <small class="text-muted">{{ entry.course.code }}</small>
+                        </td>
+                        <td>{{ entry.lecturer.username }}</td>
+                        <td>{{ entry.timetable.department.code }} - {{ entry.timetable.level }}L</td>
+                        <td>
+                            {% if not entry.time_slot %}
+                            <span class="badge bg-danger">Unassigned Slot</span>
+                            {% elif not entry.room %}
+                            <span class="badge bg-warning text-dark">Unassigned Room</span>
+                            {% else %}
+                            <span class="badge bg-info">Flagged/Manual</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'timetable:admin_timetable_edit' entry.timetable.id %}" class="btn btn-primary btn-sm">
+                                Resolve in Grid
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <i class="bi bi-check-circle text-success fs-1 mb-3 d-block"></i>
+                            <h5 class="fw-bold">No Conflicts Detected!</h5>
+                            <p class="text-muted">All courses are currently scheduled successfully.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

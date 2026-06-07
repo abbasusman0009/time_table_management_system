@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Lecturers - TTMS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Lecturers</h2>
+        <a href="{% url 'academics:lecturer_create' %}" class="btn btn-primary">
+            <i class="bi bi-person-plus me-1"></i> Add Lecturer
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th>Staff ID</th>
+                        <th>Name</th>
+                        <th>Specialization</th>
+                        <th>Username</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lec in lecturers %}
+                    <tr>
+                        <td class="fw-bold">{{ lec.staff_id }}</td>
+                        <td>{{ lec.user.get_full_name }}</td>
+                        <td>{{ lec.specialization }}</td>
+                        <td><span class="badge bg-light text-dark border">{{ lec.user.username }}</span></td>
+                        <td>
+                            <a href="{% url 'academics:lecturer_detail' lec.pk %}" class="btn btn-sm btn-outline-secondary">View Profile</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">No lecturers found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

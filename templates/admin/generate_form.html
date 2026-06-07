@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Generate Timetable - TTMS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4 shadow-sm border-0">
+            <div class="text-center mb-4">
+                <i class="bi bi-cpu fs-1 text-primary"></i>
+                <h3 class="fw-bold mt-2">Scheduling Engine</h3>
+                <p class="text-muted">Generate a new conflict-free timetable using greedy constraints.</p>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Select Department</label>
+                    <select name="department" class="form-select" required>
+                        <option value="">Choose...</option>
+                        {% for dept in departments %}
+                        <option value="{{ dept.id }}">{{ dept.name }} ({{ dept.code }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Level</label>
+                        <select name="level" class="form-select" required>
+                            <option value="100">100 Level</option>
+                            <option value="200">200 Level</option>
+                            <option value="300">300 Level</option>
+                            <option value="400">400 Level</option>
+                            <option value="500">500 Level</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Semester</label>
+                        <select name="semester" class="form-select" required>
+                            <option value="1st Semester">1st Semester</option>
+                            <option value="2nd Semester">2nd Semester</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label">Academic Year</label>
+                    <input type="text" name="academic_year" class="form-control" value="2025/2026" required>
+                </div>
+                
+                <div class="alert alert-info py-2 small">
+                    <i class="bi bi-info-circle me-2"></i>
+                    The engine will attempt to respect lecturer availability and room capacities.
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                    <i class="bi bi-play-fill me-1"></i> Start Generation
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

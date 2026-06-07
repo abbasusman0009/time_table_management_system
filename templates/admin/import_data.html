@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Bulk Data Import - TTMS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card p-4 shadow-sm border-0">
+            <div class="text-center mb-5">
+                <i class="bi bi-file-earmark-arrow-up fs-1 text-primary"></i>
+                <h3 class="fw-bold mt-2">Bulk Data Import</h3>
+                <p class="text-muted">Populate your system quickly by uploading CSV files for Departments, Courses, or Rooms.</p>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-md-4 text-center">
+                    <div class="p-3 bg-light rounded shadow-sm h-100">
+                        <h6>Departments</h6>
+                        <code class="small d-block mb-2">code, name, faculty</code>
+                        <span class="badge bg-primary">Required: code, name</span>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="p-3 bg-light rounded shadow-sm h-100">
+                        <h6>Courses</h6>
+                        <code class="small d-block mb-2">code, title, dept_code, lecturer_username</code>
+                        <span class="badge bg-primary">Required: all four</span>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="p-3 bg-light rounded shadow-sm h-100">
+                        <h6>Rooms</h6>
+                        <code class="small d-block mb-2">name, capacity, type</code>
+                        <span class="badge bg-primary">Required: name, capacity</span>
+                    </div>
+                </div>
+            </div>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">Data Type</label>
+                        <select name="type" class="form-select" required>
+                            <option value="dept">Departments</option>
+                            <option value="course">Courses</option>
+                            <option value="room">Rooms</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label">Select CSV File</label>
+                        <input type="file" name="file" class="form-control" accept=".csv" required>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary w-100 py-2">
+                            <i class="bi bi-upload me-1"></i> Import Now
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="alert alert-info mt-5 border-0 bg-light-primary">
+                <h6 class="fw-bold"><i class="bi bi-info-circle me-2"></i> Important Notes:</h6>
+                <ul class="mb-0 small">
+                    <li>Ensure your CSV file uses UTF-8 encoding.</li>
+                    <li>Headers must exactly match the names shown above (case-sensitive).</li>
+                    <li>For Courses, the <code>dept_code</code> and <code>lecturer_username</code> must already exist in the system.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

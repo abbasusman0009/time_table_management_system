@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}My Teaching Schedule - TTMS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">My Teaching Schedule</h2>
+            <p class="text-muted">Personalized timetable for {{ user.get_full_name }} ({{ user.username }})</p>
+        </div>
+        <div>
+            <a href="{% url 'timetable:export_lecturer_pdf' %}" class="btn btn-outline-danger me-2">
+                <i class="bi bi-file-earmark-pdf me-1"></i> Export PDF
+            </a>
+            <a href="{% url 'timetable:export_lecturer_excel' %}" class="btn btn-outline-success me-2">
+                <i class="bi bi-file-earmark-excel me-1"></i> Export Excel
+            </a>
+            <button onclick="window.print()" class="btn btn-outline-primary">
+                <i class="bi bi-printer me-1"></i> Print
+            </button>
+        </div>
+    </div>
+
+    <!-- Calendar Grid -->
+    <div class="card shadow-sm border-0 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-bordered mb-0 align-middle">
+                <thead class="bg-primary text-white text-center">
+                    <tr>
+                        <th style="width: 120px;" class="py-3">Time / Day</th>
+                        <th class="py-3">Monday</th>
+                        <th class="py-3">Tuesday</th>
+                        <th class="py-3">Wednesday</th>
+                        <th class="py-3">Thursday</th>
+                        <th class="py-3">Friday</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for slot in timeslots %}
+                    <tr>
+                        <td class="text-center fw-bold bg-light text-secondary">
+                            <div class="small">{{ slot.start_time|time:"H:i" }}</div>
+                            <div class="small text-muted">to</div>
+                            <div class="small">{{ slot.end_time|time:"H:i" }}</div>
+                        </td>
+                        {% for day in days %}
+                        <td class="p-2" style="min-height: 120px; width: 17%;">
+                            {% with day_name=day %}
+                            {% for entry in entries %}
+                                {% if entry.time_slot.day == day_name and entry.time_slot.slot_index == slot.slot_index %}
+                                <div class="p-3 mb-2 rounded bg-primary bg-opacity-10 border-start border-primary border-4 shadow-sm h-100 d-flex flex-column justify-content-between">
+                                    <div>
+                                        <div class="fw-bold text-primary mb-1">{{ entry.course.code }}</div>
+                                        <div class="small text-muted mb-2" style="line-height: 1.2;">{{ entry.course.title|truncatechars:40 }}</div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top border-primary border-opacity-25">
+                                        <span class="badge bg-white text-dark border"><i class="bi bi-door-open me-1"></i>{{ entry.room.name|default:"TBA" }}</span>
+                                        <span class="small fw-semibold text-secondary">{{ entry.timetable.department.code }} {{ entry.timetable.level }}L</span>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                            {% endwith %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="bi bi-calendar-x fs-1 d-block mb-3 text-secondary opacity-50"></i>
+                            No timeslots have been configured by the admin yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media print {
+        .sidebar, .navbar, .btn {
+            display: none !important;
+        }
+        .main-content {
+            margin-left: 0 !important;
+            padding: 0 !important;
+        }
+        .card {
+            box-shadow: none !important;
+            border: none !important;
+        }
+        @page { size: landscape; }
+    }
+</style>
+{% endblock %}
